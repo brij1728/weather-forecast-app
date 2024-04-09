@@ -38,7 +38,7 @@ export const SearchInput: React.FC<Props> = ({ onSearch }) => {
         onChange={(e) => setQuery(e.target.value)}
         className="p-2 border rounded shadow"
       />
-      {query.length >= 3 && suggestions.length > 0 && (
+      {query.length >= 2 && suggestions.length > 0 && (
         <ul className="absolute z-10 list-none bg-white border rounded shadow-lg max-h-60 overflow-auto">
           {suggestions.map((suggestion, index) => (
             <li
