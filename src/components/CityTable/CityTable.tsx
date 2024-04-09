@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CityRow } from '../CityRow';
 import { SearchInput } from '../SearchInput';
 import { fetchCities } from '../../api';
+import { v4 as uuidv4 } from 'uuid';
 
 export const CityTable: React.FC = () => {
   const [cities, setCities] = useState<CityDetails[]>([]);
@@ -45,7 +46,7 @@ export const CityTable: React.FC = () => {
     name: cityDetails.name,
     country: cityDetails.cou_name_en, 
     timezone: cityDetails.timezone,
-    id: cityDetails.geoname_id, 
+    id: uuidv4(),  
   }));
   return (
     <div className="container mx-auto p-4">
