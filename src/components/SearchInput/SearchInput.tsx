@@ -18,19 +18,19 @@ export const SearchInput: React.FC<Props> = ({ onSearch }) => {
         const fetchedSuggestions = await fetchCities(query);
         const suggestionNames = fetchedSuggestions
           .map(city => city.name)
-          .filter(name => name.toLowerCase().includes(query.toLowerCase())); 
+          .filter(name => name.toLowerCase().includes(query.toLowerCase()));
         setSuggestions(suggestionNames);
       } else {
         setSuggestions([]);
       }
     };
 
-    const timerId = setTimeout(loadSuggestions, 500); 
+    const timerId = setTimeout(loadSuggestions, 500);
     return () => clearTimeout(timerId);
   }, [query]);
 
   return (
-    <div>
+    <div className="relative">
       <input
         type="text"
         value={query}

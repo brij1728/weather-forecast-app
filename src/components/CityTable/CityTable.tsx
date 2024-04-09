@@ -3,15 +3,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { CityDetails } from '@/types';
-import {CityRow} from '../CityRow';
-import {SearchInput} from '../SearchInput';
+import { CityRow } from '../CityRow';
+import { SearchInput } from '../SearchInput';
 import { fetchCities } from '@/api';
+import { sortCities } from '@/utils/sortCities';
 import { v4 as uuidv4 } from 'uuid';
 
 export const CityTable: React.FC = () => {
   const [allCities, setAllCities] = useState<CityDetails[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortColumn, setSortColumn] = useState<string>('name'); // default sort column
+  const [sortColumn, setSortColumn] = useState<keyof CityDetails>('name'); // default sort column
   const [sortDirection, setSortDirection] = useState<'ascending' | 'descending'>('ascending');
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -41,23 +42,12 @@ export const CityTable: React.FC = () => {
     loadCities();
   }, [searchTerm, start]);
 
-  const transformedCities = useMemo(() => {
-    return allCities
-      .sort((a, b) => {
-        if (!sortColumn) return 0;
-        const valueA = a[sortColumn as keyof CityDetails];
-        const valueB = b[sortColumn as keyof CityDetails];
-        if (valueA < valueB) return sortDirection === 'ascending' ? -1 : 1;
-        if (valueA > valueB) return sortDirection === 'ascending' ? 1 : -1;
-        return 0;
-      })
-      .map(cityDetail => ({
-        id: uuidv4(),
-        name: cityDetail.name,
-        country: cityDetail.cou_name_en,
-        timezone: cityDetail.timezone,
-      }));
-  }, [allCities, sortColumn, sortDirection]);
+  const transformedCities = useMemo(() => sortCities(allCities, sortColumn, sortDirection).map(cityDetail => ({
+    id: uuidv4(),
+    name: cityDetail.name,
+    country: cityDetail.cou_name_en,
+    timezone: cityDetail.timezone,
+  })), [allCities, sortColumn, sortDirection]);
 
   const handleSortChange = (column: keyof CityDetails) => {
     if (sortColumn === column) {
@@ -68,7 +58,7 @@ export const CityTable: React.FC = () => {
     }
   };
 
-  const getSortIndicator = (column: string) => {
+  const getSortIndicator = (column: keyof CityDetails) => {
     if (sortColumn === column) {
       return sortDirection === 'ascending' ? ' 🔼' : ' 🔽';
     }

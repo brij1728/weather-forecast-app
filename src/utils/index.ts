@@ -1,1 +1,1 @@
-export * from './sortAndFilterCities';
+export * from './sortCities';
