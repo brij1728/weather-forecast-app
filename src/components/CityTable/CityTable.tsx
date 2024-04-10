@@ -146,7 +146,7 @@ export const CityTable: React.FC = () => {
                     value={nameFilter}
                     onChange={(e) => setNameFilter(e.target.value)}
                     placeholder="Filter"
-                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm font-normalfocus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </th>
@@ -158,7 +158,7 @@ export const CityTable: React.FC = () => {
                     value={countryFilter}
                     onChange={(e) => setCountryFilter(e.target.value)}
                     placeholder="Filter"
-                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm font-normal focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </th>
@@ -170,7 +170,7 @@ export const CityTable: React.FC = () => {
                     value={timezoneFilter}
                     onChange={(e) => setTimezoneFilter(e.target.value)}
                     placeholder="Filter"
-                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm font-normal focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </th>
