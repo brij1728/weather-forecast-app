@@ -20,7 +20,7 @@ const debounce = (func: Function, delay: number) => {
 export const CityTable: React.FC = () => {
   const [allCities, setAllCities] = useState<CityDetails[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortColumn, setSortColumn] = useState<keyof CityDetails>('name');
+  const [sortColumn, setSortColumn] = useState<keyof CityDetails | null>(null);
   const [sortDirection, setSortDirection] = useState<'ascending' | 'descending'>('ascending');
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -75,12 +75,23 @@ export const CityTable: React.FC = () => {
     return filtered;
   }, [allCities, nameFilter, countryFilter, timezoneFilter]);
 
-  const transformedCities = useMemo(() => sortCities(filteredCities, sortColumn, sortDirection).map(cityDetail => ({
-    id: uuidv4(),
-    name: cityDetail.name,
-    country: cityDetail.cou_name_en,
-    timezone: cityDetail.timezone,
-  })), [filteredCities, sortColumn, sortDirection]);
+  const transformedCities = useMemo(() => {
+    if (sortColumn) {
+      return sortCities(filteredCities, sortColumn, sortDirection).map(cityDetail => ({
+        id: uuidv4(),
+        name: cityDetail.name,
+        country: cityDetail.cou_name_en,
+        timezone: cityDetail.timezone,
+      }));
+    } else {
+      return filteredCities.map(cityDetail => ({
+        id: uuidv4(),
+        name: cityDetail.name,
+        country: cityDetail.cou_name_en,
+        timezone: cityDetail.timezone,
+      }));
+    }
+  }, [filteredCities, sortColumn, sortDirection]);
 
   const handleSortChange = (column: keyof CityDetails) => {
     if (sortColumn === column) {
@@ -117,33 +128,59 @@ export const CityTable: React.FC = () => {
         setAllCities([]);
         setHasMore(true);
       }} />
-      <table ref={tableRef} className="min-w-full divide-y divide-gray-200 mt-4">
-        <thead className="bg-gray-200 text-left text-xs font-semibold uppercase tracking-wider">
-          <tr>
-            <th className="p-2 cursor-pointer" onClick={() => handleSortChange('name')}>
-              City Name{getSortIndicator('name')}
-              <input type="text" value={nameFilter} onChange={(e) => setNameFilter(e.target.value)} placeholder="Filter" />
-            </th>
-            <th className="p-2 cursor-pointer" onClick={() => handleSortChange('cou_name_en')}>
-              Country{getSortIndicator('cou_name_en')}
-              <input type="text" value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} placeholder="Filter" />
-            </th>
-            <th className="p-2 cursor-pointer" onClick={() => handleSortChange('timezone')}>
-              Timezone{getSortIndicator('timezone')}
-              <input type="text" value={timezoneFilter} onChange={(e) => setTimezoneFilter(e.target.value)} placeholder="Filter" />
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {transformedCities.map((city, index) => (
-            <CityRow 
-              ref={index + 1 === transformedCities.length ? lastCityElementRef : null} 
-              key={city.id}
-              city={city}
-            />
-          ))}
-        </tbody>
-      </table>
+      <div className="overflow-x-auto">
+        <table ref={tableRef} className="min-w-full divide-y divide-gray-200 mt-4 sm:table-fixed">
+          <thead className="bg-gray-200 text-left text-xs font-semibold uppercase tracking-wider">
+            <tr>
+              <th className="p-2 cursor-pointer" onClick={() => handleSortChange('name')}>
+                <div className="flex flex-col">
+                  <span className="mb-1">City Name{sortColumn === 'name' && getSortIndicator('name')}</span>
+                  <input 
+                    type="text"
+                    value={nameFilter}
+                    onChange={(e) => setNameFilter(e.target.value)}
+                    placeholder="Filter"
+                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              </th>
+              <th className="p-2 cursor-pointer" onClick={() => handleSortChange('cou_name_en')}>
+                <div className="flex flex-col">
+                  <span className="mb-1">Country{sortColumn === 'cou_name_en' && getSortIndicator('cou_name_en')}</span>
+                  <input 
+                    type="text"
+                    value={countryFilter}
+                    onChange={(e) => setCountryFilter(e.target.value)}
+                    placeholder="Filter"
+                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              </th>
+              <th className="p-2 cursor-pointer" onClick={() => handleSortChange('timezone')}>
+                <div className="flex flex-col">
+                  <span className="mb-1">Timezone{sortColumn === 'timezone' && getSortIndicator('timezone')}</span>
+                  <input 
+                    type="text"
+                    value={timezoneFilter}
+                    onChange={(e) => setTimezoneFilter(e.target.value)}
+                    placeholder="Filter"
+                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {transformedCities.map((city, index) => (
+              <CityRow 
+                ref={index + 1 === transformedCities.length ? lastCityElementRef : null} 
+                key={city.id}
+                city={city}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
       {loading && <p>Loading more cities...</p>}
     </div>
   );
