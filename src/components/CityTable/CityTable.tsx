@@ -100,13 +100,18 @@ export const CityTable: React.FC = () => {
   }, [filteredCities, sortColumn, sortDirection]);
 
   const handleSortChange = (column: keyof CityDetails) => {
-    if (sortColumn === column) {
-      setSortDirection(prevDirection => prevDirection === 'ascending' ? 'descending' : 'ascending');
-    } else {
-      setSortColumn(column);
-      setSortDirection('ascending');
-    }
-  };
+  const isFilterInputFocused = document.activeElement?.tagName === 'INPUT';
+  
+  if (isFilterInputFocused) return;
+  
+  if (sortColumn === column) {
+    setSortDirection(prevDirection => prevDirection === 'ascending' ? 'descending' : 'ascending');
+  } else {
+    setSortColumn(column);
+    setSortDirection('ascending');
+  }
+};
+
 
   const getSortIndicator = (column: keyof CityDetails) => {
     if (sortColumn === column) {
