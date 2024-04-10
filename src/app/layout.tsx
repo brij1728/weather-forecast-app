@@ -26,7 +26,7 @@ export default function RootLayout({
       >
         <div className="flex justify-between pt-4 pr-12">
           <div></div> 
-          <ThemePicker />
+          {/* <ThemePicker /> */}
         </div>
         <div className="flex-grow">{children}</div>
       </body>

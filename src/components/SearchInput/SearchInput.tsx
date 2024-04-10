@@ -36,7 +36,7 @@ export const SearchInput: React.FC<Props> = ({ onSearch }) => {
         value={query}
         placeholder="Search cities..."
         onChange={(e) => setQuery(e.target.value)}
-        className="p-2 border rounded shadow"
+        className="w-full p-2 border rounded shadow"
       />
       {query.length >= 2 && suggestions.length > 0 && (
         <ul className="absolute z-10 list-none bg-white border rounded shadow-lg max-h-60 overflow-auto">

@@ -34,10 +34,16 @@ export const CityTable: React.FC = () => {
   const loadCities = async () => {
     setLoading(true);
     const newCities = await fetchCities(searchTerm, start);
-    setAllCities(prev => start === 0 ? newCities : [...prev, ...newCities]);
+    if (start === 0) {
+      setAllCities(newCities);
+    } else {
+      setAllCities(prev => [...prev, ...newCities]);
+    }
     setLoading(false);
     if (newCities.length < 20) setHasMore(false);
   };
+
+
 
   const debouncedLoadCities = useMemo(() => debounce(loadCities, 500), []);
 
@@ -132,9 +138,9 @@ export const CityTable: React.FC = () => {
         <table ref={tableRef} className="min-w-full divide-y divide-gray-200 mt-4 sm:table-fixed">
           <thead className="bg-gray-200 text-left text-xs font-semibold uppercase tracking-wider">
             <tr>
-              <th className="p-2 cursor-pointer" onClick={() => handleSortChange('name')}>
+              <th className="p-2 cursor-pointer relative" onClick={() => handleSortChange('name')}>
                 <div className="flex flex-col">
-                  <span className="mb-1">City Name{sortColumn === 'name' && getSortIndicator('name')}</span>
+                  <span className="mb-1">City Name{getSortIndicator('name')}</span>
                   <input 
                     type="text"
                     value={nameFilter}
@@ -144,9 +150,9 @@ export const CityTable: React.FC = () => {
                   />
                 </div>
               </th>
-              <th className="p-2 cursor-pointer" onClick={() => handleSortChange('cou_name_en')}>
+              <th className="p-2 cursor-pointer relative" onClick={() => handleSortChange('cou_name_en')}>
                 <div className="flex flex-col">
-                  <span className="mb-1">Country{sortColumn === 'cou_name_en' && getSortIndicator('cou_name_en')}</span>
+                  <span className="mb-1">Country{getSortIndicator('cou_name_en')}</span>
                   <input 
                     type="text"
                     value={countryFilter}
@@ -156,9 +162,9 @@ export const CityTable: React.FC = () => {
                   />
                 </div>
               </th>
-              <th className="p-2 cursor-pointer" onClick={() => handleSortChange('timezone')}>
+              <th className="p-2 cursor-pointer relative" onClick={() => handleSortChange('timezone')}>
                 <div className="flex flex-col">
-                  <span className="mb-1">Timezone{sortColumn === 'timezone' && getSortIndicator('timezone')}</span>
+                  <span className="mb-1">Timezone{getSortIndicator('timezone')}</span>
                   <input 
                     type="text"
                     value={timezoneFilter}
