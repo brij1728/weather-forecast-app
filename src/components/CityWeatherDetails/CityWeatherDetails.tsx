@@ -116,6 +116,26 @@ export const CityWeatherDetails = () => {
                 Wind: {windSpeed.toFixed(1)} {windSpeedUnit}
               </p>
             </div>
+			<div className="flex w-full gap-10 sm:gap-16 overflow-x-auto justify-between pt-3 ">
+				{weatherData?.list.map((data, index) => {
+					const date = parseISO(data.dt_txt);
+					const time = format(date, "h:mm a");
+					const temperature =  kelvinToCelsius(data?.main.temp ?? 273.15);
+					return (
+						<div key={index} className="flex flex-col items-center justify-between gap-2 text-xs font-semibold">
+							<p className="whitespace-nowrap">{time}</p>
+							<img
+								src={`http://openweathermap.org/img/wn/${data.weather[0].icon}.png`}
+								alt={data.weather[0].description}
+								className="w-10 h-10"
+							/>
+							<p className="text-xs">{temperature.toFixed(0)}°</p>
+						</div>
+					);
+
+				
+				})}
+			</div>
           </WeatherContainer>
         </div>
       </section>
