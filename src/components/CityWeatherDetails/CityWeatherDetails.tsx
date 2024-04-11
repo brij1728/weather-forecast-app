@@ -12,6 +12,7 @@ import { format, parseISO } from "date-fns";
 import { Spinner } from "../Spinner";
 import { WeatherContainer } from "../WeatherContainer";
 import { WeatherForecastResponse } from "@/types";
+import { WeatherIcon } from "../WeatherIcon";
 import { fetchWeatherData } from "@/api";
 
 export const CityWeatherDetails = () => {
@@ -124,11 +125,7 @@ export const CityWeatherDetails = () => {
 					return (
 						<div key={index} className="flex flex-col items-center justify-between gap-2 text-xs font-semibold">
 							<p className="whitespace-nowrap">{time}</p>
-							<img
-								src={`http://openweathermap.org/img/wn/${data.weather[0].icon}.png`}
-								alt={data.weather[0].description}
-								className="w-10 h-10"
-							/>
+							<WeatherIcon iconName={data.weather[0].icon} />
 							<p className="text-xs">{temperature.toFixed(0)}°</p>
 						</div>
 					);
