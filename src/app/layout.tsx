@@ -24,10 +24,10 @@ export default function RootLayout({
           ` bg-[#F7F7F8] dark:bg-[#292B32] text-black dark:text-white flex flex-col`
         }
       >
-        <div className="flex justify-between pt-4 pr-12">
+        {/* <div className="flex justify-between pt-4 pr-12">
           <div></div> 
-          {/* <ThemePicker /> */}
-        </div>
+          <ThemePicker /> 
+        </div> */}
         <div className="flex-grow">{children}</div>
       </body>
     </html>
