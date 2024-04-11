@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import {
   convertWindSpeedToKmh,
   convertWindSpeedToMph,
+  getLocalTimeInfo,
   kelvinToCelsius,
   kelvinToFahrenheit,
 } from "@/utils";
@@ -47,14 +48,10 @@ export const CityWeatherDetails = () => {
     return <Spinner />;
   }
 
+  
   const firstData = weatherData?.list[0];
-  let dayOfWeek = "";
-  let formattedDate = "";
-  if (firstData) {
-    const date = parseISO(firstData.dt_txt);
-    dayOfWeek = format(date, "EEEE");
-    formattedDate = format(date, "dd.MM.yyyy");
-  }
+  
+  const { time, day, date } = getLocalTimeInfo(weatherData?.city.timezone ?? 12);
 
   // Convert temperature and wind speed based on selected unit
   const temperature =
@@ -73,9 +70,16 @@ export const CityWeatherDetails = () => {
     <main className="flex flex-col w-full max-w-7xl mx-auto px-3 pt-4 pb-10">
       <section className="space-y-4">
         <div className="space-y-2">
+		  <h2 className="flex gap-1 items-end">
+		    <p className="text-2xl">{weatherData?.city.name},</p>
+		    <p className="text-lg">{weatherData?.city.country}</p>
+		  </h2>
+		  <h2>
+			<p>Local Time: {time}</p>
+		  </h2>
           <h2 className="flex gap-1 text-2xl items-end">
-            <p className="text-2xl">{dayOfWeek}</p>
-            <p className="text-lg">({formattedDate})</p>
+            <p className="text-2xl">{day}</p>
+            <p className="text-lg">({date})</p>
           </h2>
           <WeatherContainer className="gap-2 px-6 items-center">
             <div className="flex flex-col px-4">
