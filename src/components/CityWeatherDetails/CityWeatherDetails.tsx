@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { convertWindSpeedToKmh, convertWindSpeedToMph, kelvinToCelsius, kelvinToFahrenheit } from "@/utils";
+import { convertWindSpeedToKmh, convertWindSpeedToMph, getLocalTimeInfo, kelvinToCelsius, kelvinToFahrenheit } from "@/utils";
 import { format, parseISO } from "date-fns";
 
 import { Spinner } from "../Spinner";
@@ -9,6 +9,7 @@ import { WeatherContainer } from "../WeatherContainer";
 import { WeatherForecastResponse } from "@/types";
 import { WeatherIcon } from "../WeatherIcon";
 import { fetchWeatherData } from "@/api";
+import { get } from "http";
 import { useLocalTimeInfo } from "@/hooks";
 
 export const CityWeatherDetails = () => {
@@ -54,6 +55,8 @@ export const CityWeatherDetails = () => {
     ? convertWindSpeedToKmh(firstData.wind.speed)
     : convertWindSpeedToMph(convertWindSpeedToKmh(firstData.wind.speed));
   const windSpeedUnit = unit === "C" ? "km/h" : "mph";
+
+  const { sunrise, sunset } = getLocalTimeInfo(weatherData.city.timezone, weatherData.city.sunrise, weatherData.city.sunset);
 
   return (
     <main className="flex flex-col w-full max-w-7xl mx-auto px-3 pt-4 pb-10">
@@ -103,17 +106,25 @@ export const CityWeatherDetails = () => {
            
           </WeatherContainer>
           <WeatherContainer className="gap-2 px-6 items-center">
-             <div className="flex flex-col">
-              <h2 className="flex gap-1 items-end">
-                <p className="text-2xl">{weatherData?.city.name},</p>
-                <p className="text-lg">{weatherData?.city.country}</p>
-              </h2>
-              <h2 className="text-sm">
-                <p>Local Time: {time}</p>
-                <p>{date}</p>
-              </h2>
+            <div className="flex flex-row justify-between w-full">
+              <div className="flex flex-col">
+                <div className="flex gap-1 items-end">
+                  <p className="text-2xl">{weatherData?.city.name},</p>
+                  <p className="text-lg">{weatherData?.city.country}</p>
+                </div>
+                <h2 className="text-xs">
+                  <p>Local Time: {time}</p>
+                  <p>{date}</p>
+                </h2>
+              </div>
+              <div className="flex flex-col justify-end text-xs">
+                <p className="text-right">Sunrise: {sunrise}</p>
+                <p className="text-right">Sunset: {sunset}</p>
+              </div>
             </div>
           </WeatherContainer>
+
+
           <WeatherContainer className="gap-2 px-6 items-center">
             
             <div className="flex w-full gap-10 sm:gap-16 overflow-x-auto justify-between pt-3 ">
