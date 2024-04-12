@@ -1,11 +1,9 @@
-import { CityWeatherDetails, Navbar } from '@/components'
-
+import { CityWeatherDetails } from '@/components'
 import React from 'react'
 
 export default function Page(){
   return (
 	<div>
-    <Navbar/>
     <CityWeatherDetails/>
   </div>
   )
