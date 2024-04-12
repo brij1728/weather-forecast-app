@@ -1,5 +1,4 @@
-import { CityTable, CityWeatherDetails } from '@/components'
-
+import { CityTable } from '@/components'
 import React from 'react'
 
 export default function Page(){

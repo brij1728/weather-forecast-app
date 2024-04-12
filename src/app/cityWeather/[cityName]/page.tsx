@@ -1,9 +1,8 @@
 "use client";
 
+import { CityDetails, Spinner } from "@/components";
 import { useEffect, useState } from "react";
 
-import { CityDetails } from "@/components/CityDetails/CityDetails";
-import { Spinner } from "@/components";
 import { WeatherForecastResponse } from "@/types";
 import { fetchWeatherData } from "@/api";
 import { usePathname } from "next/navigation";

@@ -3,3 +3,4 @@ export * from './CityTable';
 export * from './Navbar';
 export * from './CityWeatherDetails';
 export * from './Spinner';
+export * from './CityDetails';
