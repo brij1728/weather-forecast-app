@@ -18,8 +18,8 @@ export const CityWeatherDetails = () => {
   const [error, setError] = useState("");
   const [unit, setUnit] = useState<'C' | 'F'>('C');
 
-  // Call useLocalTimeInfo unconditionally
-  const timezoneOffsetInSeconds = weatherData ? weatherData.city.timezone : 0; // Default to 0 if not available
+  
+  const timezoneOffsetInSeconds = weatherData ? weatherData.city.timezone : 0; 
   const { time, day, date } = useLocalTimeInfo(timezoneOffsetInSeconds);
 
   useEffect(() => {
@@ -59,17 +59,7 @@ export const CityWeatherDetails = () => {
     <main className="flex flex-col w-full max-w-7xl mx-auto px-3 pt-4 pb-10">
       <section className="space-y-4">
         <div className="space-y-2">
-		  <h2 className="flex gap-1 items-end">
-		    <p className="text-2xl">{weatherData?.city.name},</p>
-		    <p className="text-lg">{weatherData?.city.country}</p>
-		  </h2>
-		  <h2>
-			<p>Local Time: {time}</p>
-		  </h2>
-          <h2 className="flex gap-1 text-2xl items-end">
-            <p className="text-2xl">{day}</p>
-            <p className="text-lg">({date})</p>
-          </h2>
+          
           <WeatherContainer className="gap-2 px-6 items-center">
             <div className="flex flex-col px-4">
               <div className="flex items-start">
@@ -110,22 +100,36 @@ export const CityWeatherDetails = () => {
                 Wind: {windSpeed.toFixed(1)} {windSpeedUnit}
               </p>
             </div>
-			<div className="flex w-full gap-10 sm:gap-16 overflow-x-auto justify-between pt-3 ">
-				{weatherData?.list.map((data, index) => {
-					const date = parseISO(data.dt_txt);
-					const time = format(date, "h:mm a");
-					const temperature =  kelvinToCelsius(data?.main.temp ?? 273.15);
-					return (
-						<div key={index} className="flex flex-col items-center justify-between gap-2 text-xs font-semibold">
-							<p className="whitespace-nowrap">{time}</p>
-							<WeatherIcon iconName={data.weather[0].icon} />
-							<p className="text-xs">{temperature.toFixed(0)}°</p>
-						</div>
-					);
-
-				
-				})}
-			</div>
+           
+          </WeatherContainer>
+          <WeatherContainer className="gap-2 px-6 items-center">
+             <div className="flex flex-col">
+              <h2 className="flex gap-1 items-end">
+                <p className="text-2xl">{weatherData?.city.name},</p>
+                <p className="text-lg">{weatherData?.city.country}</p>
+              </h2>
+              <h2 className="text-sm">
+                <p>Local Time: {time}</p>
+                <p>{date}</p>
+              </h2>
+            </div>
+          </WeatherContainer>
+          <WeatherContainer className="gap-2 px-6 items-center">
+            
+            <div className="flex w-full gap-10 sm:gap-16 overflow-x-auto justify-between pt-3 ">
+              {weatherData?.list.map((data, index) => {
+                const date = parseISO(data.dt_txt);
+                const time = format(date, "h:mm a");
+                const temperature =  kelvinToCelsius(data?.main.temp ?? 273.15);
+                return (
+                  <div key={index} className="flex flex-col items-center justify-between gap-2 text-xs font-semibold">
+                    <p className="whitespace-nowrap">{time}</p>
+                    <WeatherIcon iconName={data.weather[0].icon} />
+                    <p className="text-xs">{temperature.toFixed(0)}°</p>
+                  </div>
+                );
+              })}
+            </div>
           </WeatherContainer>
         </div>
       </section>

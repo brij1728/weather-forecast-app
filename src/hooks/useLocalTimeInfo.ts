@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
+import { dateFormat } from '@/utils';
 import { format } from 'date-fns';
 
 interface LocalTimeInfo {
@@ -23,7 +24,8 @@ export const useLocalTimeInfo = (timezoneOffsetInSeconds: number): LocalTimeInfo
 
       const formattedTime = format(adjustedTime, 'HH:mm:ss');
       const formattedDay = format(adjustedTime, 'EEEE');
-      const formattedDate = format(adjustedTime, 'dd.MM.yyyy');
+      const dayOfMonth = format(adjustedTime, 'd');
+      const formattedDate = `${formattedDay}, ${dateFormat(parseInt(dayOfMonth))} ${format(adjustedTime, 'MMMM')} ${format(adjustedTime, 'yyyy')}`;
 
       setLocalTimeInfo({
         time: formattedTime,
@@ -33,12 +35,9 @@ export const useLocalTimeInfo = (timezoneOffsetInSeconds: number): LocalTimeInfo
     };
 
     const timerId = setInterval(updateLocalTime, 1000);
-
     updateLocalTime();
-
     return () => clearInterval(timerId);
   }, [timezoneOffsetInSeconds]);
 
   return localTimeInfo;
 };
-
