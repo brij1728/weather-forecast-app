@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  convertWindSpeedToKmh,
-  convertWindSpeedToMph,
-  getLocalTimeInfo,
-  kelvinToCelsius,
-  kelvinToFahrenheit,
-} from "@/utils";
+import { convertWindSpeedToKmh, convertWindSpeedToMph, kelvinToCelsius, kelvinToFahrenheit } from "@/utils";
 import { format, parseISO } from "date-fns";
 
 import { Spinner } from "../Spinner";
@@ -15,55 +9,50 @@ import { WeatherContainer } from "../WeatherContainer";
 import { WeatherForecastResponse } from "@/types";
 import { WeatherIcon } from "../WeatherIcon";
 import { fetchWeatherData } from "@/api";
+import { useLocalTimeInfo } from "@/hooks";
 
 export const CityWeatherDetails = () => {
   const [city, setCity] = useState("Ballia");
-  const [weatherData, setWeatherData] =useState < WeatherForecastResponse | null > (null);
+  const [weatherData, setWeatherData] = useState<WeatherForecastResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [unit, setUnit] = useState<'C' | 'F'>('C');
 
-  const handleFetchWeather = async () => {
-    if (!city) {
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      const data = await fetchWeatherData(city);
-      setWeatherData(data);
-    } catch (error) {
-      setError("Failed to fetch weather data");
-      setWeatherData(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Call useLocalTimeInfo unconditionally
+  const timezoneOffsetInSeconds = weatherData ? weatherData.city.timezone : 0; // Default to 0 if not available
+  const { time, day, date } = useLocalTimeInfo(timezoneOffsetInSeconds);
 
   useEffect(() => {
+    const handleFetchWeather = async () => {
+      if (!city) return;
+      setLoading(true);
+      try {
+        const data = await fetchWeatherData(city);
+        setWeatherData(data);
+      } catch (error) {
+        setError("Failed to fetch weather data");
+        setWeatherData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     handleFetchWeather();
   }, [city]);
 
-  if (loading) {
-    return <Spinner />;
-  }
+  if (loading) return <Spinner />;
+  if (error) return <p>Error: {error}</p>;
+  if (!weatherData) return <p>No weather data available for {city}</p>;
 
-  
-  const firstData = weatherData?.list[0];
-  
-  const { time, day, date } = getLocalTimeInfo(weatherData?.city.timezone ?? 12);
+  const firstData = weatherData.list[0];
 
   // Convert temperature and wind speed based on selected unit
-  const temperature =
-    unit === "C"
-      ? kelvinToCelsius(firstData?.main?.temp ?? 273.15)
-      : kelvinToFahrenheit(firstData?.main?.temp ?? 273.15);
-  const windSpeed =
-    unit === "C"
-      ? convertWindSpeedToKmh(firstData?.wind.speed ?? 0)
-      : convertWindSpeedToMph(
-          convertWindSpeedToKmh(firstData?.wind.speed ?? 0),
-        );
+  const temperature = unit === "C"
+    ? kelvinToCelsius(firstData.main.temp)
+    : kelvinToFahrenheit(firstData.main.temp);
+  const windSpeed = unit === "C"
+    ? convertWindSpeedToKmh(firstData.wind.speed)
+    : convertWindSpeedToMph(convertWindSpeedToKmh(firstData.wind.speed));
   const windSpeedUnit = unit === "C" ? "km/h" : "mph";
 
   return (
