@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { convertWindSpeedToKmh, convertWindSpeedToMph, getLocalTimeInfo, kelvinToCelsius, kelvinToFahrenheit } from "@/utils";
 import { format, parseISO } from "date-fns";
 
@@ -10,11 +10,11 @@ import { WeatherIcon } from "../WeatherIcon";
 import { useLocalTimeInfo } from "@/hooks";
 
 interface CityDetailsProps {
-  cityName: string;
+  
   weatherData:WeatherForecastResponse
 }
 
-export const CityDetails: React.FC<CityDetailsProps> = ({ cityName, weatherData }) => {
+export const CityDetails: React.FC<CityDetailsProps> = ({  weatherData }) => {
   
   const [unit, setUnit] = useState<'C' | 'F'>('C');
 

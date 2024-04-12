@@ -36,6 +36,6 @@ export default function Page () {
     if (!weatherData) return <p>No weather data available for {cityName}</p>;
 
     return (
-       <CityDetails cityName={cityName} weatherData={weatherData} />
+       <CityDetails  weatherData={weatherData} />
     );
 };
