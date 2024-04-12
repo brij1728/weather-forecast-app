@@ -8,7 +8,7 @@ export const CityRow = forwardRef<HTMLTableRowElement, { city: City }>((props, r
   return (
     <tr ref={ref} className="border-b">
       <td className="p-4">
-        <Link href={`/cities/${city.id}`} className="text-blue-500 hover:underline">
+        <Link href={`/cityWeather/${city.name}`} className="text-blue-500 hover:underline">
           {city.name}
         </Link>
       </td>

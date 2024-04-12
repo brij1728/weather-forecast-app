@@ -4,46 +4,24 @@ import React, { useEffect, useState } from "react";
 import { convertWindSpeedToKmh, convertWindSpeedToMph, getLocalTimeInfo, kelvinToCelsius, kelvinToFahrenheit } from "@/utils";
 import { format, parseISO } from "date-fns";
 
-import { Spinner } from "../Spinner";
 import { WeatherContainer } from "../WeatherContainer";
 import { WeatherForecastResponse } from "@/types";
 import { WeatherIcon } from "../WeatherIcon";
-import { fetchWeatherData } from "@/api";
-import { get } from "http";
 import { useLocalTimeInfo } from "@/hooks";
 
-export const CityWeatherDetails = () => {
-  const [city, setCity] = useState("Ballia");
-  const [weatherData, setWeatherData] = useState<WeatherForecastResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+interface CityDetailsProps {
+  cityName: string;
+  weatherData:WeatherForecastResponse
+}
+
+export const CityDetails: React.FC<CityDetailsProps> = ({ cityName, weatherData }) => {
+  
   const [unit, setUnit] = useState<'C' | 'F'>('C');
 
   
   const timezoneOffsetInSeconds = weatherData ? weatherData.city.timezone : 0; 
-  const { time, date } = useLocalTimeInfo(timezoneOffsetInSeconds);
+  const { time,  date } = useLocalTimeInfo(timezoneOffsetInSeconds);
 
-  useEffect(() => {
-    const handleFetchWeather = async () => {
-      if (!city) return;
-      setLoading(true);
-      try {
-        const data = await fetchWeatherData(city);
-        setWeatherData(data);
-      } catch (error) {
-        setError("Failed to fetch weather data");
-        setWeatherData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    handleFetchWeather();
-  }, [city]);
-
-  if (loading) return <Spinner />;
-  if (error) return <p>Error: {error}</p>;
-  if (!weatherData) return <p>No weather data available for {city}</p>;
 
   const firstData = weatherData.list[0];
 

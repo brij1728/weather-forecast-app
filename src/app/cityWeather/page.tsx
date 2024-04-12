@@ -1,10 +1,11 @@
-import { CityWeatherDetails } from '@/components'
+import { CityTable, CityWeatherDetails } from '@/components'
+
 import React from 'react'
 
 export default function Page(){
   return (
 	<div>
-    <CityWeatherDetails/>
+    <CityTable/>
   </div>
   )
 }
