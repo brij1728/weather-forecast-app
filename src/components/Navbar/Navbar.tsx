@@ -1,7 +1,6 @@
 import { MdMyLocation, MdOutlineLocationOn, MdWbSunny } from 'react-icons/md'
 
 import React from 'react'
-import { SearchBox } from '../SearchBox'
 
 export const Navbar = () => {
   const handleSearch = (value: string) => {
@@ -22,7 +21,7 @@ export const Navbar = () => {
 				<MdMyLocation size={30} className="text-2xl  text-gray-400 hover:opacity-80 cursor-pointer" />
 				<MdOutlineLocationOn size={30} className="text-3xl" />
 				<p className="text-slate-900/80 text-sm">India</p>
-				{/* <div><SearchBox value={''} onChange={undefined} onSubmit={handleSubmit}/></div> */}
+				
 			</section>
 		</div>
 	</nav>
