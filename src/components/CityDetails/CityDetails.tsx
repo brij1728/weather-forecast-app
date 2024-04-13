@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { convertWindSpeedToKmh, convertWindSpeedToMph, getLocalTimeInfo, kelvinToCelsius, kelvinToFahrenheit } from "@/utils";
+import { SpeedUnit, TemperatureUnit, WeatherForecastResponse } from "@/types";
+import { convertSpeed, convertTemperature, convertWindSpeedToKmh, convertWindSpeedToMph, getLocalTimeInfo, kelvinToCelsius, kelvinToFahrenheit } from "@/utils";
 import { format, parseISO } from "date-fns";
 
 import { WeatherContainer } from "../WeatherContainer";
-import { WeatherForecastResponse } from "@/types";
 import { WeatherIcon } from "../WeatherIcon";
 import { useLocalTimeInfo } from "@/hooks";
 
@@ -16,7 +16,8 @@ interface CityDetailsProps {
 
 export const CityDetails: React.FC<CityDetailsProps> = ({  weatherData }) => {
   
-  const [unit, setUnit] = useState<'C' | 'F'>('C');
+  const [temperatureUnit, setTemperatureUnit] = useState<TemperatureUnit>(TemperatureUnit.Celsius);
+  const [speedUnit, setSpeedUnit] = useState<SpeedUnit>(SpeedUnit.Kmh);
 
   
   const timezoneOffsetInSeconds = weatherData ? weatherData.city.timezone : 0; 
@@ -25,14 +26,19 @@ export const CityDetails: React.FC<CityDetailsProps> = ({  weatherData }) => {
 
   const firstData = weatherData.list[0];
 
-  // Convert temperature and wind speed based on selected unit
-  const temperature = unit === "C"
-    ? kelvinToCelsius(firstData.main.temp)
-    : kelvinToFahrenheit(firstData.main.temp);
-  const windSpeed = unit === "C"
-    ? convertWindSpeedToKmh(firstData.wind.speed)
-    : convertWindSpeedToMph(convertWindSpeedToKmh(firstData.wind.speed));
-  const windSpeedUnit = unit === "C" ? "km/h" : "mph";
+  const temperature = convertTemperature(firstData.main.temp, temperatureUnit);
+  const feelsLikeTemperature = convertTemperature(firstData.main.feels_like, temperatureUnit);
+
+  const windSpeed = convertSpeed(firstData.wind.speed, speedUnit);
+  const windSpeedUnit = speedUnit === SpeedUnit.Kmh ? "km/h" : "mph";
+
+  const toggleTemperatureUnit = () => {
+    const newTempUnit = temperatureUnit === TemperatureUnit.Celsius ? TemperatureUnit.Fahrenheit : TemperatureUnit.Celsius;
+    setTemperatureUnit(newTempUnit);
+
+    const newSpeedUnit = newTempUnit === TemperatureUnit.Celsius ? SpeedUnit.Kmh : SpeedUnit.Mph;
+    setSpeedUnit(newSpeedUnit);
+  };
 
   const { sunrise, sunset } = getLocalTimeInfo(weatherData.city.timezone, weatherData.city.sunrise, weatherData.city.sunset);
 
@@ -46,15 +52,15 @@ export const CityDetails: React.FC<CityDetailsProps> = ({  weatherData }) => {
               <div className="flex items-start">
                 <span className="text-5xl ">{temperature.toFixed(0)}</span>
                 <span
-                  className={`cursor-pointer mx-2 ${unit === "C" ? "text-black" : "text-gray-400"}`}
-                  onClick={() => setUnit("C")}
+                  className={`cursor-pointer mx-2 ${temperatureUnit === "C" ? "text-black" : "text-gray-400"}`}
+                  onClick={toggleTemperatureUnit}
                 >
                   °C
                 </span>
                 |
                 <span
-                  className={`cursor-pointer mx-2 ${unit === "F" ? "text-black" : "text-gray-400"}`}
-                  onClick={() => setUnit("F")}
+                  className={`cursor-pointer mx-2 ${temperatureUnit === "F" ? "text-black" : "text-gray-400"}`}
+                  onClick={toggleTemperatureUnit}
                 >
                   °F
                 </span>
@@ -62,7 +68,7 @@ export const CityDetails: React.FC<CityDetailsProps> = ({  weatherData }) => {
               <p className="text-xs space-x-1 whitespace-nowrap">
                 <span>Feels like </span>
                 <span>
-                  {kelvinToCelsius(firstData?.main?.feels_like ?? 273.15)}°
+                  {feelsLikeTemperature}°
                 </span>
               </p>
               <p className="text-xs space-x-2">
