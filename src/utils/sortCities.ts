@@ -1,8 +1,20 @@
-import { CityDetails } from '@/types';
+import { City } from "@/types";
 
-export const sortCities = (cities: CityDetails[], sortColumn: keyof CityDetails, sortDirection: 'ascending' | 'descending'): CityDetails[] =>
+export const sortCities = (
+  cities: City[],
+  sortColumn: keyof City,
+  sortDirection: "ascending" | "descending"
+): City[] =>
   cities.slice().sort((a, b) => {
     const valueA = a[sortColumn];
     const valueB = b[sortColumn];
-    return sortDirection === 'ascending' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+    if (typeof valueA === "number" && typeof valueB === "number") {
+      return sortDirection === "ascending" ? valueA - valueB : valueB - valueA;
+    } else if (typeof valueA === "string" && typeof valueB === "string") {
+      return sortDirection === "ascending"
+        ? valueA.localeCompare(valueB)
+        : valueB.localeCompare(valueA);
+    } else {
+      return 0;
+    }
   });

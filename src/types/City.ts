@@ -2,7 +2,8 @@ export interface City {
   name: string;
   country: string;
   timezone: string;
-  id: string; 
+  id: string;
+  coordinates: Coordinates;
 }
 
 export interface CitySearchResponse {

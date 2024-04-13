@@ -21,14 +21,14 @@ export default function RootLayout({
       <body
         className={
           inter.className +
-          ` bg-[#F7F7F8] dark:bg-[#292B32] text-black dark:text-white flex flex-col`
+          ` bg-[#F7F7F8] dark:bg-[#292B32] text-black dark:text-white`
         }
       >
         {/* <div className="flex justify-between pt-4 pr-12">
-          <div></div> 
-          <ThemePicker /> 
+          <div></div>
+          <ThemePicker />
         </div> */}
-        <div className="flex-grow">{children}</div>
+        <div>{children}</div>
       </body>
     </html>
   );

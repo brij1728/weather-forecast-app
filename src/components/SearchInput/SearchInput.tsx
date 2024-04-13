@@ -1,24 +1,26 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import { fetchCities } from '../../api';
+import { fetchCities } from "../../api";
 
 interface Props {
   onSearch: (query: string) => void;
 }
 
 export const SearchInput: React.FC<Props> = ({ onSearch }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
   useEffect(() => {
     const loadSuggestions = async () => {
       if (query.length >= 2) {
-        const fetchedSuggestions = await fetchCities(query);
+        const fetchedSuggestions = await fetchCities({
+          cityName: query,
+        });
         const suggestionNames = fetchedSuggestions
-          .map(city => city.name)
-          .filter(name => name.toLowerCase().includes(query.toLowerCase()));
+          .map((city) => city.name)
+          .filter((name) => name.toLowerCase().includes(query.toLowerCase()));
         setSuggestions(suggestionNames);
       } else {
         setSuggestions([]);
@@ -46,7 +48,7 @@ export const SearchInput: React.FC<Props> = ({ onSearch }) => {
               className="p-2 hover:bg-gray-100 cursor-pointer"
               onClick={() => {
                 onSearch(suggestion);
-                setQuery('');
+                setQuery("");
                 setSuggestions([]);
               }}
             >

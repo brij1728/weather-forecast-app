@@ -1,41 +1,56 @@
 "use client";
 
 import { CityDetails, Spinner } from "@/components";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { WeatherForecastResponse } from "@/types";
-import { fetchWeatherData } from "@/api";
+import { fetchWeatherData, getCityById } from "@/api";
 import { usePathname } from "next/navigation";
 
-export default function Page () {
-    const pathname = usePathname();
-	console.log(pathname);
-    const cityName = pathname.split('/')[2]; 
+export default function Page() {
+  const pathname = usePathname();
+  const cityId = pathname.split("/")[2];
 
-    const [weatherData, setWeatherData] = useState<WeatherForecastResponse | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+  const [weatherData, setWeatherData] =
+    useState<WeatherForecastResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    useEffect(() => {
-        if (!cityName) return;
+  const fetchCityWeather = useCallback(async (cityId: string) => {
+    if (!cityId) return;
+    setLoading(true);
 
-        setLoading(true);
-        fetchWeatherData(cityName)
-            .then(data => {
-                setWeatherData(data);
-                setLoading(false);
-            })
-            .catch(err => {
-                setError('Failed to fetch weather data');
-                setLoading(false);
-            });
-    }, [cityName]);
+    try {
+      const city = await getCityById(cityId);
+      if (!city) {
+        throw new Error("City not found");
+      }
 
-    if (loading) return <Spinner />;
-    if (error) return <p>Error: {error}</p>;
-    if (!weatherData) return <p>No weather data available for {cityName}</p>;
+      try {
+        const data = await fetchWeatherData(city.coordinates);
+        setWeatherData(data);
+      } catch (err) {
+        throw new Error("Failed to fetch weather data");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unknown error occurred");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    return (
-       <CityDetails  weatherData={weatherData} />
-    );
-};
+  useEffect(() => {
+    fetchCityWeather(cityId);
+    console.log(cityId);
+  }, [cityId, fetchCityWeather]);
+
+  if (loading) return <Spinner />;
+  if (error) return <p>Error: {error}</p>;
+  if (!weatherData) return <p>No weather data available for {cityId}</p>;
+
+  return <CityDetails weatherData={weatherData} />;
+}
