@@ -1,10 +1,10 @@
 "use client";
 
 import { CityDetails, Spinner } from "@/components";
+import { fetchWeatherData, getCityById } from "@/api";
 import { useCallback, useEffect, useState } from "react";
 
 import { WeatherForecastResponse } from "@/types";
-import { fetchWeatherData, getCityById } from "@/api";
 import { usePathname } from "next/navigation";
 
 export default function Page() {
@@ -45,7 +45,6 @@ export default function Page() {
 
   useEffect(() => {
     fetchCityWeather(cityId);
-    console.log(cityId);
   }, [cityId, fetchCityWeather]);
 
   if (loading) return <Spinner />;

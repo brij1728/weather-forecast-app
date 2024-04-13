@@ -1,33 +1,25 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 
+import { City } from "../../types";
+import Link from "next/link";
 import { fetchCities } from "../../api";
 
-interface Props {
-  onSearch: (query: string) => void;
-}
-
-export const SearchInput: React.FC<Props> = ({ onSearch }) => {
+export const SearchInput: React.FC = () => {
   const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-
+  const [suggestions, setSuggestions] = useState<City[]>([]);
   useEffect(() => {
     const loadSuggestions = async () => {
       if (query.length >= 2) {
         const fetchedSuggestions = await fetchCities({
           cityName: query,
         });
-        const suggestionNames = fetchedSuggestions
-          .map((city) => city.name)
-          .filter((name) => name.toLowerCase().includes(query.toLowerCase()));
-        setSuggestions(suggestionNames);
+        setSuggestions(fetchedSuggestions);
       } else {
         setSuggestions([]);
       }
     };
 
-    const timerId = setTimeout(loadSuggestions, 500);
+    const timerId = setTimeout(loadSuggestions, 500); 
     return () => clearTimeout(timerId);
   }, [query]);
 
@@ -42,17 +34,14 @@ export const SearchInput: React.FC<Props> = ({ onSearch }) => {
       />
       {query.length >= 2 && suggestions.length > 0 && (
         <ul className="absolute z-10 list-none bg-white border rounded shadow-lg max-h-60 overflow-auto">
-          {suggestions.map((suggestion, index) => (
-            <li
-              key={index}
-              className="p-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => {
-                onSearch(suggestion);
-                setQuery("");
-                setSuggestions([]);
-              }}
-            >
-              {suggestion}
+          {suggestions.map((suggestion) => (
+            <li key={suggestion.id} className="p-2 hover:bg-gray-100">
+              <Link
+                href={`/cityWeather/${suggestions[0].id}`}
+                className="text-blue-500 hover:underline block"
+              >
+                {suggestion.name}
+              </Link>
             </li>
           ))}
         </ul>
@@ -60,3 +49,4 @@ export const SearchInput: React.FC<Props> = ({ onSearch }) => {
     </div>
   );
 };
+

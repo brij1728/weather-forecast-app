@@ -126,7 +126,7 @@ export const CityTable: React.FC = () => {
 
   return (
     <div className="container mx-auto p-1">
-      <SearchInput onSearch={(query: string) => {}} />
+      <SearchInput />
       <div className="overflow-x-auto">
         <table
           ref={tableRef}
