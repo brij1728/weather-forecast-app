@@ -1,59 +1,27 @@
 "use client";
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { debounce, sortCities } from '@/utils';
 
-import { City } from "@/types";
-import { CityRow } from "../CityRow";
-import { SearchInput } from "../SearchInput";
-import { fetchCities } from "@/api";
-import { sortCities } from "@/utils/sortCities";
-
-const debounce = (func: Function, delay: number) => {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  return (...args: any[]) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func.apply(null, args), delay);
-  };
-};
+import { City } from '@/types';
+import { CityRow } from '../CityRow';
+import { SearchInput } from '../SearchInput';
+import { Spinner } from '../Spinner';
+import { TableHeader } from '../TableHeader';
+import { useCityData } from '@/hooks';
 
 export const CityTable: React.FC = () => {
-  const [allCities, setAllCities] = useState<City[]>([]);
   const [sortColumn, setSortColumn] = useState<keyof City | null>(null);
-  const [sortDirection, setSortDirection] = useState<
-    "ascending" | "descending"
-  >("ascending");
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [start, setStart] = useState(0);
-  const [nameFilter, setNameFilter] = useState("");
-  const [countryFilter, setCountryFilter] = useState("");
-  const [timezoneFilter, setTimezoneFilter] = useState("");
+  const [sortDirection, setSortDirection] = useState<'ascending' | 'descending'>('ascending');
+  const [nameFilter, setNameFilter] = useState<string>('');
+  const [countryFilter, setCountryFilter] = useState<string>('');
+  const [timezoneFilter, setTimezoneFilter] = useState<string>('');
   const tableRef = useRef<HTMLTableElement>(null);
   const observer = useRef<IntersectionObserver>();
+  const [start, setStart] = useState<number>(0);
   const ROWS_PER_PAGE = 100;
 
-  const loadCities = useCallback(async () => {
-    setLoading(true);
-    const newCities = await fetchCities({
-      cityName: nameFilter,
-      countryName: countryFilter,
-      start,
-      limit: ROWS_PER_PAGE,
-    });
-    setHasMore(newCities.length > 0);
-    if (start === 0) {
-      setAllCities(newCities);
-    } else {
-      setAllCities((prev) => [...prev, ...newCities]);
-    }
-    setLoading(false);
-  }, [countryFilter, nameFilter, start]);
+  const { allCities, loading, hasMore, loadCities } = useCityData({ nameFilter, countryFilter, start, ROWS_PER_PAGE });
 
   const debouncedLoadCities = useMemo(
     () => debounce(loadCities, 500),
@@ -103,112 +71,58 @@ export const CityTable: React.FC = () => {
     }
   };
 
-  const getSortIndicator = (column: keyof City) => {
-    if (sortColumn === column) {
-      return sortDirection === "ascending" ? " 🔼" : " 🔽";
-    }
-    return " ⇅";
-  };
-
-  const lastCityElementRef = useCallback(
-    (node: HTMLElement | null) => {
-      if (loading || !hasMore) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          setStart((prevStart) => prevStart + ROWS_PER_PAGE);
-        }
-      });
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore]
-  );
+  const lastCityElementRef = useCallback((node: HTMLTableRowElement) => {
+	if (loading) return;
+	if (observer.current) observer.current.disconnect();
+	observer.current = new IntersectionObserver(entries => {
+	  if (entries[0].isIntersecting && hasMore) {
+		setStart(prevStart => prevStart + ROWS_PER_PAGE);
+	  }
+	});
+	if (node) observer.current.observe(node);
+  }, [loading, hasMore, ROWS_PER_PAGE]);
 
   return (
     <div className="container mx-auto p-1">
       <SearchInput />
       <div className="overflow-x-auto">
-        <table
-          ref={tableRef}
-          className="min-w-full divide-y divide-gray-200 mt-4 sm:table-fixed"
-        >
+        <table ref={tableRef} className="min-w-full divide-y divide-gray-200 mt-4">
           <thead className="bg-gray-200 text-left text-xs font-semibold uppercase tracking-wider">
             <tr>
-              <th
-                className="p-2 cursor-pointer relative"
-                onClick={() => handleSortChange("name")}
-              >
-                <div className="flex flex-col">
-                  <span className="mb-1">
-                    City Name{getSortIndicator("name")}
-                  </span>
-                  <input
-                    type="text"
-                    value={nameFilter}
-                    onChange={(e) => {
-                      setStart(0);
-                      setNameFilter(e.target.value);
-                    }}
-                    placeholder="Filter"
-                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm font-normal focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              </th>
-              <th
-                className="p-2 cursor-pointer relative"
-                onClick={() => handleSortChange("country")}
-              >
-                <div className="flex flex-col">
-                  <span className="mb-1">
-                    Country{getSortIndicator("country")}
-                  </span>
-                  <input
-                    type="text"
-                    value={countryFilter}
-                    onChange={(e) => {
-                      setStart(0);
-                      setCountryFilter(e.target.value);
-                    }}
-                    placeholder="Filter"
-                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm font-normal focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              </th>
-              <th
-                className="p-2 cursor-pointer relative"
-                onClick={() => handleSortChange("timezone")}
-              >
-                <div className="flex flex-col">
-                  <span className="mb-1">
-                    Timezone{getSortIndicator("timezone")}
-                  </span>
-                  <input
-                    type="text"
-                    value={timezoneFilter}
-                    onChange={(e) => setTimezoneFilter(e.target.value)}
-                    placeholder="Filter"
-                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm font-normal focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              </th>
+              <TableHeader
+                label="name"
+                value={nameFilter}
+                sortColumn={sortColumn}
+                sortDirection={sortDirection}
+                onFilterChange={setNameFilter}
+                onSortChange={() => handleSortChange('name')}
+              />
+              <TableHeader
+                label="country"
+                value={countryFilter}
+                sortColumn={sortColumn}
+                sortDirection={sortDirection}
+                onFilterChange={setCountryFilter}
+                onSortChange={() => handleSortChange('country')}
+              />
+              <TableHeader
+                label="timezone"
+                value={timezoneFilter}
+                sortColumn={sortColumn}
+                sortDirection={sortDirection}
+                onFilterChange={setTimezoneFilter}
+                onSortChange={() => handleSortChange('timezone')}
+              />
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {transformedCities.map((city, index) => (
-              <CityRow
-                ref={
-                  index + 1 === transformedCities.length
-                    ? lastCityElementRef
-                    : null
-                }
-                key={city.id + city.name + city.country}
-                city={city}
-              />
+              <CityRow key={city.id} city={city} ref={index + 1 === transformedCities.length ? lastCityElementRef : null} />
             ))}
           </tbody>
         </table>
       </div>
-      {loading && <p>Loading more cities...</p>}
+      {loading && <Spinner/>}
     </div>
   );
 };
