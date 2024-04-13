@@ -3,7 +3,7 @@ import React from 'react'
 
 export default function Page(){
   return (
-	<div className="m-2">
+	<div className="m-4">
     <CityTable/>
   </div>
   )
