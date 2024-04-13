@@ -73,10 +73,10 @@ export const CityDetails: React.FC<CityDetailsProps> = ({  weatherData }) => {
               </p>
               <p className="text-xs space-x-2">
                 <span>
-                  {kelvinToCelsius(firstData?.main?.temp_min ?? 273.15)}°↓
+                  {convertTemperature((firstData?.main?.temp_min ?? 273.15), temperatureUnit)}°↓
                 </span>
                 <span>
-                  {kelvinToCelsius(firstData?.main?.temp_max ?? 273.15)}°↑
+                  {convertTemperature((firstData?.main?.temp_max ?? 273.15), temperatureUnit)}°↑
                 </span>
               </p>
             </div>
@@ -115,7 +115,7 @@ export const CityDetails: React.FC<CityDetailsProps> = ({  weatherData }) => {
               {weatherData?.list.map((data, index) => {
                 const date = parseISO(data.dt_txt);
                 const time = format(date, "h:mm a");
-                const temperature =  kelvinToCelsius(data?.main.temp ?? 273.15);
+                const temperature =  convertTemperature((data?.main.temp ?? 273.15), temperatureUnit);
                 return (
                   <div key={index} className="flex flex-col items-center justify-between gap-2 text-xs font-semibold">
                     <p className="whitespace-nowrap">{time}</p>
