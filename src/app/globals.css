@@ -2,3 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.linear-gradient-bg {
+  background: linear-gradient(135deg, #4568DC 0%, #B06AB3 50%, #DE5959 100%);
+}
