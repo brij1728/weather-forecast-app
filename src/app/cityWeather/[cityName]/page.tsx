@@ -4,6 +4,7 @@ import { CityDetails, Spinner } from "@/components";
 import { fetchWeatherData, getCityById } from "@/api";
 import { useCallback, useEffect, useState } from "react";
 
+import { CityInfo } from "@/components/CityInfo";
 import { WeatherForecastResponse } from "@/types";
 import { usePathname } from "next/navigation";
 
@@ -51,5 +52,5 @@ export default function Page() {
   if (error) return <p>Error: {error}</p>;
   if (!weatherData) return <p>No weather data available for {cityId}</p>;
 
-  return <CityDetails weatherData={weatherData} />;
+  return <CityInfo weatherData={weatherData} />;
 }
